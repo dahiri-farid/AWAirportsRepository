@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-struct AirportComment {
+struct AWAirportComment {
     let id: Int64
     let threadRef: Int64?
     let airportRef: Int64?
@@ -24,18 +24,27 @@ struct AirportComment {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[AirportComment.id]
-        self.threadRef = row[AirportComment.threadRef]
-        self.airportRef = row[AirportComment.airportRef]
-        self.airportIdent = row[AirportComment.airportIdent]
-        self.date = row[AirportComment.date]
-        self.memberNickname = row[AirportComment.memberNickname]
-        self.subject = row[AirportComment.subject]
-        self.body = row[AirportComment.body]
+        self.id = row[AWAirportComment.id]
+        self.threadRef = row[AWAirportComment.threadRef]
+        self.airportRef = row[AWAirportComment.airportRef]
+        self.airportIdent = row[AWAirportComment.airportIdent]
+        self.date = row[AWAirportComment.date]
+        self.memberNickname = row[AWAirportComment.memberNickname]
+        self.subject = row[AWAirportComment.subject]
+        self.body = row[AWAirportComment.body]
     }
     
     // Convenience initializer
-    init(id: Int64, threadRef: Int64? = nil, airportRef: Int64? = nil, airportIdent: String? = nil, date: String? = nil, memberNickname: String? = nil, subject: String? = nil, body: String? = nil) {
+    init(
+        id: Int64,
+        threadRef: Int64? = nil,
+        airportRef: Int64? = nil,
+        airportIdent: String? = nil,
+        date: String? = nil,
+        memberNickname: String? = nil,
+        subject: String? = nil,
+        body: String? = nil
+    ) {
         self.id = id
         self.threadRef = threadRef
         self.airportRef = airportRef
@@ -68,21 +77,21 @@ struct AirportComment {
 }
 
 // MARK: - Equatable
-extension AirportComment: Equatable {
-    static func == (lhs: AirportComment, rhs: AirportComment) -> Bool {
+extension AWAirportComment: Equatable {
+    static func == (lhs: AWAirportComment, rhs: AWAirportComment) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension AirportComment: Hashable {
+extension AWAirportComment: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension AirportComment: CustomStringConvertible {
+extension AWAirportComment: CustomStringConvertible {
     var description: String {
         return "AirportComment(id: \(id), subject: \(displaySubject), author: \(memberNickname ?? "anonymous"))"
     }

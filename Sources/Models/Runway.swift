@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-struct Runway {
+struct AWRunway {
     let id: Int64
     let airportRef: Int64
     let airportIdent: String?
@@ -48,30 +48,51 @@ struct Runway {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[Runway.id]
-        self.airportRef = row[Runway.airportRef]
-        self.airportIdent = row[Runway.airportIdent]
-        self.lengthFt = row[Runway.lengthFt]
-        self.widthFt = row[Runway.widthFt]
-        self.surface = row[Runway.surface]
-        self.lighted = row[Runway.lighted].map { $0 == 1 }
-        self.closed = row[Runway.closed].map { $0 == 1 }
-        self.leIdent = row[Runway.leIdent]
-        self.leLatitudeDeg = row[Runway.leLatitudeDeg]
-        self.leLongitudeDeg = row[Runway.leLongitudeDeg]
-        self.leElevationFt = row[Runway.leElevationFt]
-        self.leHeadingDegT = row[Runway.leHeadingDegT]
-        self.leDisplacedThresholdFt = row[Runway.leDisplacedThresholdFt]
-        self.heIdent = row[Runway.heIdent]
-        self.heLatitudeDeg = row[Runway.heLatitudeDeg]
-        self.heLongitudeDeg = row[Runway.heLongitudeDeg]
-        self.heElevationFt = row[Runway.heElevationFt]
-        self.heHeadingDegT = row[Runway.heHeadingDegT]
-        self.heDisplacedThresholdFt = row[Runway.heDisplacedThresholdFt]
+        self.id = row[AWRunway.id]
+        self.airportRef = row[AWRunway.airportRef]
+        self.airportIdent = row[AWRunway.airportIdent]
+        self.lengthFt = row[AWRunway.lengthFt]
+        self.widthFt = row[AWRunway.widthFt]
+        self.surface = row[AWRunway.surface]
+        self.lighted = row[AWRunway.lighted].map { $0 == 1 }
+        self.closed = row[AWRunway.closed].map { $0 == 1 }
+        self.leIdent = row[AWRunway.leIdent]
+        self.leLatitudeDeg = row[AWRunway.leLatitudeDeg]
+        self.leLongitudeDeg = row[AWRunway.leLongitudeDeg]
+        self.leElevationFt = row[AWRunway.leElevationFt]
+        self.leHeadingDegT = row[AWRunway.leHeadingDegT]
+        self.leDisplacedThresholdFt = row[AWRunway.leDisplacedThresholdFt]
+        self.heIdent = row[AWRunway.heIdent]
+        self.heLatitudeDeg = row[AWRunway.heLatitudeDeg]
+        self.heLongitudeDeg = row[AWRunway.heLongitudeDeg]
+        self.heElevationFt = row[AWRunway.heElevationFt]
+        self.heHeadingDegT = row[AWRunway.heHeadingDegT]
+        self.heDisplacedThresholdFt = row[AWRunway.heDisplacedThresholdFt]
     }
     
     // Convenience initializer
-    init(id: Int64, airportRef: Int64, airportIdent: String? = nil, lengthFt: Int? = nil, widthFt: Int? = nil, surface: String? = nil, lighted: Bool? = nil, closed: Bool? = nil, leIdent: String? = nil, leLatitudeDeg: Double? = nil, leLongitudeDeg: Double? = nil, leElevationFt: Int? = nil, leHeadingDegT: Double? = nil, leDisplacedThresholdFt: Int? = nil, heIdent: String? = nil, heLatitudeDeg: Double? = nil, heLongitudeDeg: Double? = nil, heElevationFt: Int? = nil, heHeadingDegT: Double? = nil, heDisplacedThresholdFt: Int? = nil) {
+    init(
+        id: Int64,
+        airportRef: Int64,
+        airportIdent: String? = nil,
+        lengthFt: Int? = nil,
+        widthFt: Int? = nil,
+        surface: String? = nil,
+        lighted: Bool? = nil,
+        closed: Bool? = nil,
+        leIdent: String? = nil,
+        leLatitudeDeg: Double? = nil,
+        leLongitudeDeg: Double? = nil,
+        leElevationFt: Int? = nil,
+        leHeadingDegT: Double? = nil,
+        leDisplacedThresholdFt: Int? = nil,
+        heIdent: String? = nil,
+        heLatitudeDeg: Double? = nil,
+        heLongitudeDeg: Double? = nil,
+        heElevationFt: Int? = nil,
+        heHeadingDegT: Double? = nil,
+        heDisplacedThresholdFt: Int? = nil
+    ) {
         self.id = id
         self.airportRef = airportRef
         self.airportIdent = airportIdent
@@ -113,21 +134,21 @@ struct Runway {
 }
 
 // MARK: - Equatable
-extension Runway: Equatable {
-    static func == (lhs: Runway, rhs: Runway) -> Bool {
+extension AWRunway: Equatable {
+    static func == (lhs: AWRunway, rhs: AWRunway) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension Runway: Hashable {
+extension AWRunway: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension Runway: CustomStringConvertible {
+extension AWRunway: CustomStringConvertible {
     var description: String {
         return "Runway(id: \(id), designation: \(runwayDesignation), length: \(lengthFt?.description ?? "nil") ft)"
     }

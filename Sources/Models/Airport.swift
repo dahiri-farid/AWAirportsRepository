@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-enum AirportType: String, CaseIterable {
+enum AWAirportType: String, CaseIterable {
     case smallAirport = "small_airport"
     case mediumAirport = "medium_airport"
     case largeAirport = "large_airport"
@@ -12,16 +12,16 @@ enum AirportType: String, CaseIterable {
     case other = "other"
 }
 
-enum ScheduledService: String {
+enum AWScheduledService: String {
     case yes = "yes"
     case no = "no"
     case unknown = "unknown"
 }
 
-struct Airport {
+struct AWAirport {
     let id: Int64
     let ident: String
-    let type: AirportType?
+    let type: AWAirportType?
     let name: String?
     let latitudeDeg: Double?
     let longitudeDeg: Double?
@@ -30,7 +30,7 @@ struct Airport {
     let isoCountry: String?
     let isoRegion: String?
     let municipality: String?
-    let scheduledService: ScheduledService?
+    let scheduledService: AWScheduledService?
     let icaoCode: String?
     let iataCode: String?
     let gpsCode: String?
@@ -63,29 +63,49 @@ struct Airport {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[Airport.id]
-        self.ident = row[Airport.ident]
-        self.type = row[Airport.type].flatMap(AirportType.init)
-        self.name = row[Airport.name]
-        self.latitudeDeg = row[Airport.latitudeDeg]
-        self.longitudeDeg = row[Airport.longitudeDeg]
-        self.elevationFt = row[Airport.elevationFt]
-        self.continent = row[Airport.continent]
-        self.isoCountry = row[Airport.isoCountry]
-        self.isoRegion = row[Airport.isoRegion]
-        self.municipality = row[Airport.municipality]
-        self.scheduledService = row[Airport.scheduledService].flatMap(ScheduledService.init)
-        self.icaoCode = row[Airport.icaoCode]
-        self.iataCode = row[Airport.iataCode]
-        self.gpsCode = row[Airport.gpsCode]
-        self.localCode = row[Airport.localCode]
-        self.homeLink = row[Airport.homeLink]
-        self.wikipediaLink = row[Airport.wikipediaLink]
-        self.keywords = row[Airport.keywords]
+        self.id = row[AWAirport.id]
+        self.ident = row[AWAirport.ident]
+        self.type = row[AWAirport.type].flatMap(AWAirportType.init)
+        self.name = row[AWAirport.name]
+        self.latitudeDeg = row[AWAirport.latitudeDeg]
+        self.longitudeDeg = row[AWAirport.longitudeDeg]
+        self.elevationFt = row[AWAirport.elevationFt]
+        self.continent = row[AWAirport.continent]
+        self.isoCountry = row[AWAirport.isoCountry]
+        self.isoRegion = row[AWAirport.isoRegion]
+        self.municipality = row[AWAirport.municipality]
+        self.scheduledService = row[AWAirport.scheduledService].flatMap(AWScheduledService.init)
+        self.icaoCode = row[AWAirport.icaoCode]
+        self.iataCode = row[AWAirport.iataCode]
+        self.gpsCode = row[AWAirport.gpsCode]
+        self.localCode = row[AWAirport.localCode]
+        self.homeLink = row[AWAirport.homeLink]
+        self.wikipediaLink = row[AWAirport.wikipediaLink]
+        self.keywords = row[AWAirport.keywords]
     }
     
     // Convenience initializer
-    init(id: Int64, ident: String, type: AirportType? = nil, name: String? = nil, latitudeDeg: Double? = nil, longitudeDeg: Double? = nil, elevationFt: Int? = nil, continent: String? = nil, isoCountry: String? = nil, isoRegion: String? = nil, municipality: String? = nil, scheduledService: ScheduledService? = nil, icaoCode: String? = nil, iataCode: String? = nil, gpsCode: String? = nil, localCode: String? = nil, homeLink: String? = nil, wikipediaLink: String? = nil, keywords: String? = nil) {
+    init(
+        id: Int64,
+        ident: String,
+        type: AWAirportType? = nil,
+        name: String? = nil,
+        latitudeDeg: Double? = nil,
+        longitudeDeg: Double? = nil,
+        elevationFt: Int? = nil,
+        continent: String? = nil,
+        isoCountry: String? = nil,
+        isoRegion: String? = nil,
+        municipality: String? = nil,
+        scheduledService: AWScheduledService? = nil,
+        icaoCode: String? = nil,
+        iataCode: String? = nil,
+        gpsCode: String? = nil,
+        localCode: String? = nil,
+        homeLink: String? = nil,
+        wikipediaLink: String? = nil,
+        keywords: String? = nil
+    ) {
         self.id = id
         self.ident = ident
         self.type = type
@@ -122,21 +142,21 @@ struct Airport {
 }
 
 // MARK: - Equatable
-extension Airport: Equatable {
-    static func == (lhs: Airport, rhs: Airport) -> Bool {
+extension AWAirport: Equatable {
+    static func == (lhs: AWAirport, rhs: AWAirport) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension Airport: Hashable {
+extension AWAirport: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension Airport: CustomStringConvertible {
+extension AWAirport: CustomStringConvertible {
     var description: String {
         return "Airport(id: \(id), ident: \(ident), name: \(displayName))"
     }

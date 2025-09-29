@@ -19,95 +19,95 @@ class AWAirportsRepository {
     
     // MARK: - Countries
     
-    func getAllCountries() throws -> [Country] {
-        return try db.prepare(Country.table).map { Country(row: $0) }
+    func getAllCountries() throws -> [AWCountry] {
+        return try db.prepare(AWCountry.table).map { AWCountry(row: $0) }
     }
     
-    func getCountry(by code: String) throws -> Country? {
-        let query = Country.table.filter(Country.code == code)
-        return try db.pluck(query).map { Country(row: $0) }
+    func getCountry(by code: String) throws -> AWCountry? {
+        let query = AWCountry.table.filter(AWCountry.code == code)
+        return try db.pluck(query).map { AWCountry(row: $0) }
     }
     
-    func getCountries(by continent: String) throws -> [Country] {
-        let query = Country.table.filter(Country.continent == continent)
-        return try db.prepare(query).map { Country(row: $0) }
+    func getCountries(by continent: String) throws -> [AWCountry] {
+        let query = AWCountry.table.filter(AWCountry.continent == continent)
+        return try db.prepare(query).map { AWCountry(row: $0) }
     }
     
     // MARK: - Regions
     
-    func getAllRegions() throws -> [Region] {
-        return try db.prepare(Region.table).map { Region(row: $0) }
+    func getAllRegions() throws -> [AWRegion] {
+        return try db.prepare(AWRegion.table).map { AWRegion(row: $0) }
     }
     
-    func getRegions(by countryCode: String) throws -> [Region] {
-        let query = Region.table.filter(Region.isoCountry == countryCode)
-        return try db.prepare(query).map { Region(row: $0) }
+    func getRegions(by countryCode: String) throws -> [AWRegion] {
+        let query = AWRegion.table.filter(AWRegion.isoCountry == countryCode)
+        return try db.prepare(query).map { AWRegion(row: $0) }
     }
     
-    func getRegion(by code: String) throws -> Region? {
-        let query = Region.table.filter(Region.code == code)
-        return try db.pluck(query).map { Region(row: $0) }
+    func getRegion(by code: String) throws -> AWRegion? {
+        let query = AWRegion.table.filter(AWRegion.code == code)
+        return try db.pluck(query).map { AWRegion(row: $0) }
     }
     
     // MARK: - Airports
     
-    func getAllAirports() throws -> [Airport] {
-        return try db.prepare(Airport.table).map { Airport(row: $0) }
+    func getAllAirports() throws -> [AWAirport] {
+        return try db.prepare(AWAirport.table).map { AWAirport(row: $0) }
     }
     
-    func getAirport(id: Int64) throws -> Airport? {
-        let query = Airport.table.filter(Airport.id == id)
-        return try db.pluck(query).map { Airport(row: $0) }
+    func getAirport(id: Int64) throws -> AWAirport? {
+        let query = AWAirport.table.filter(AWAirport.id == id)
+        return try db.pluck(query).map { AWAirport(row: $0) }
     }
     
-    func getAirport(ident: String) throws -> Airport? {
-        let query = Airport.table.filter(Airport.ident == ident)
-        return try db.pluck(query).map { Airport(row: $0) }
+    func getAirport(ident: String) throws -> AWAirport? {
+        let query = AWAirport.table.filter(AWAirport.ident == ident)
+        return try db.pluck(query).map { AWAirport(row: $0) }
     }
     
-    func getAirport(iataCode: String) throws -> Airport? {
-        let query = Airport.table.filter(Airport.iataCode == iataCode)
-        return try db.pluck(query).map { Airport(row: $0) }
+    func getAirport(iataCode: String) throws -> AWAirport? {
+        let query = AWAirport.table.filter(AWAirport.iataCode == iataCode)
+        return try db.pluck(query).map { AWAirport(row: $0) }
     }
     
-    func getAirport(icaoCode: String) throws -> Airport? {
-        let query = Airport.table.filter(Airport.icaoCode == icaoCode)
-        return try db.pluck(query).map { Airport(row: $0) }
+    func getAirport(icaoCode: String) throws -> AWAirport? {
+        let query = AWAirport.table.filter(AWAirport.icaoCode == icaoCode)
+        return try db.pluck(query).map { AWAirport(row: $0) }
     }
     
-    func getAirports(countryCode: String) throws -> [Airport] {
-        let query = Airport.table.filter(Airport.isoCountry == countryCode)
-        return try db.prepare(query).map { Airport(row: $0) }
+    func getAirports(countryCode: String) throws -> [AWAirport] {
+        let query = AWAirport.table.filter(AWAirport.isoCountry == countryCode)
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
-    func getAirports(regionCode: String) throws -> [Airport] {
-        let query = Airport.table.filter(Airport.isoRegion == regionCode)
-        return try db.prepare(query).map { Airport(row: $0) }
+    func getAirports(regionCode: String) throws -> [AWAirport] {
+        let query = AWAirport.table.filter(AWAirport.isoRegion == regionCode)
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
-    func getAirports(type: AirportType) throws -> [Airport] {
-        let query = Airport.table.filter(Airport.type == type.rawValue)
-        return try db.prepare(query).map { Airport(row: $0) }
+    func getAirports(type: AWAirportType) throws -> [AWAirport] {
+        let query = AWAirport.table.filter(AWAirport.type == type.rawValue)
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
-    func searchAirports(name: String) throws -> [Airport] {
-        let query = Airport.table.filter(Airport.name.like("%\(name)%"))
-        return try db.prepare(query).map { Airport(row: $0) }
+    func searchAirports(name: String) throws -> [AWAirport] {
+        let query = AWAirport.table.filter(AWAirport.name.like("%\(name)%"))
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
-    func getAirportsNear(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> [Airport] {
+    func getAirportsNear(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> [AWAirport] {
         let latDelta = radiusKm / 111.0
         let lonDelta = radiusKm / (111.0 * abs(latitude) / 90.0)
         
-        let query = Airport.table
-            .filter(Airport.latitudeDeg >= latitude - latDelta)
-            .filter(Airport.latitudeDeg <= latitude + latDelta)
-            .filter(Airport.longitudeDeg >= longitude - lonDelta)
-            .filter(Airport.longitudeDeg <= longitude + lonDelta)
-            .filter(Airport.latitudeDeg != nil)
-            .filter(Airport.longitudeDeg != nil)
+        let query = AWAirport.table
+            .filter(AWAirport.latitudeDeg >= latitude - latDelta)
+            .filter(AWAirport.latitudeDeg <= latitude + latDelta)
+            .filter(AWAirport.longitudeDeg >= longitude - lonDelta)
+            .filter(AWAirport.longitudeDeg <= longitude + lonDelta)
+            .filter(AWAirport.latitudeDeg != nil)
+            .filter(AWAirport.longitudeDeg != nil)
         
-        return try db.prepare(query).map { Airport(row: $0) }
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
     /// Returns the single nearest airport to the given coordinate within the specified search radius.
@@ -116,7 +116,11 @@ class AWAirportsRepository {
     ///   - longitude: The longitude of the reference point in degrees.
     ///   - radiusKm: The search radius in kilometers (defaults to 50km). If no airports are found in this radius, returns nil.
     /// - Returns: The nearest `Airport` if one exists in the search radius; otherwise `nil`.
-    func getNearestAirport(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> Airport? {
+    func getNearestAirport(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double = 50
+    ) throws -> AWAirport? {
         // Local Haversine distance calculator (in kilometers)
         func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
             let R = 6371.0 // Earth's mean radius in km
@@ -134,7 +138,7 @@ class AWAirportsRepository {
         guard !candidates.isEmpty else { return nil }
 
         // Compute precise distances and return the closest one.
-        let nearest = candidates.compactMap { airport -> (Airport, Double)? in
+        let nearest = candidates.compactMap { airport -> (AWAirport, Double)? in
             guard let lat = airport.latitudeDeg, let lon = airport.longitudeDeg else { return nil }
             let distance = haversineDistanceKm(latitude, longitude, lat, lon)
             return (airport, distance)
@@ -143,19 +147,24 @@ class AWAirportsRepository {
         return nearest
     }
     
-    func getAirportsForLocation(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> [Airport] {
-        let query = Airport.table
-            .filter(Airport.longitudeDeg >= longitude - rangeLongitude)
-            .filter(Airport.longitudeDeg <= longitude + rangeLongitude)
-            .filter(Airport.latitudeDeg >= latitude - rangeLatitude)
-            .filter(Airport.latitudeDeg <= latitude + rangeLatitude)
-            .filter(Airport.latitudeDeg != nil)
-            .filter(Airport.longitudeDeg != nil)
+    func getAirportsForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double
+    ) throws -> [AWAirport] {
+        let query = AWAirport.table
+            .filter(AWAirport.longitudeDeg >= longitude - rangeLongitude)
+            .filter(AWAirport.longitudeDeg <= longitude + rangeLongitude)
+            .filter(AWAirport.latitudeDeg >= latitude - rangeLatitude)
+            .filter(AWAirport.latitudeDeg <= latitude + rangeLatitude)
+            .filter(AWAirport.latitudeDeg != nil)
+            .filter(AWAirport.longitudeDeg != nil)
         
-        return try db.prepare(query).map { Airport(row: $0) }
+        return try db.prepare(query).map { AWAirport(row: $0) }
     }
     
-    func getAirportsForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [Airport] {
+    func getAirportsForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [AWAirport] {
         return try getAirportsForLocation(
             latitude: latitude,
             longitude: longitude,
@@ -166,89 +175,89 @@ class AWAirportsRepository {
     
     // MARK: - Airport Frequencies
     
-    func getFrequencies(for airportId: Int64) throws -> [AirportFrequency] {
-        let query = AirportFrequency.table.filter(AirportFrequency.airportRef == airportId)
-        return try db.prepare(query).map { AirportFrequency(row: $0) }
+    func getFrequencies(for airportId: Int64) throws -> [AWAirportFrequency] {
+        let query = AWAirportFrequency.table.filter(AWAirportFrequency.airportRef == airportId)
+        return try db.prepare(query).map { AWAirportFrequency(row: $0) }
     }
     
-    func getFrequencies(for airportIdent: String) throws -> [AirportFrequency] {
-        let query = AirportFrequency.table.filter(AirportFrequency.airportIdent == airportIdent)
-        return try db.prepare(query).map { AirportFrequency(row: $0) }
+    func getFrequencies(for airportIdent: String) throws -> [AWAirportFrequency] {
+        let query = AWAirportFrequency.table.filter(AWAirportFrequency.airportIdent == airportIdent)
+        return try db.prepare(query).map { AWAirportFrequency(row: $0) }
     }
     
-    func getFrequencies(by type: String) throws -> [AirportFrequency] {
-        let query = AirportFrequency.table.filter(AirportFrequency.type == type)
-        return try db.prepare(query).map { AirportFrequency(row: $0) }
+    func getFrequencies(by type: String) throws -> [AWAirportFrequency] {
+        let query = AWAirportFrequency.table.filter(AWAirportFrequency.type == type)
+        return try db.prepare(query).map { AWAirportFrequency(row: $0) }
     }
     
     // MARK: - Runways
     
-    func getRunways(for airportId: Int64) throws -> [Runway] {
-        let query = Runway.table.filter(Runway.airportRef == airportId)
-        return try db.prepare(query).map { Runway(row: $0) }
+    func getRunways(for airportId: Int64) throws -> [AWRunway] {
+        let query = AWRunway.table.filter(AWRunway.airportRef == airportId)
+        return try db.prepare(query).map { AWRunway(row: $0) }
     }
     
-    func getRunways(for airportIdent: String) throws -> [Runway] {
-        let query = Runway.table.filter(Runway.airportIdent == airportIdent)
-        return try db.prepare(query).map { Runway(row: $0) }
+    func getRunways(for airportIdent: String) throws -> [AWRunway] {
+        let query = AWRunway.table.filter(AWRunway.airportIdent == airportIdent)
+        return try db.prepare(query).map { AWRunway(row: $0) }
     }
     
-    func getRunways(longerThan lengthFt: Int) throws -> [Runway] {
-        let query = Runway.table.filter(Runway.lengthFt >= lengthFt)
-        return try db.prepare(query).map { Runway(row: $0) }
+    func getRunways(longerThan lengthFt: Int) throws -> [AWRunway] {
+        let query = AWRunway.table.filter(AWRunway.lengthFt >= lengthFt)
+        return try db.prepare(query).map { AWRunway(row: $0) }
     }
     
-    func getRunways(with surface: String) throws -> [Runway] {
-        let query = Runway.table.filter(Runway.surface.like("%\(surface)%"))
-        return try db.prepare(query).map { Runway(row: $0) }
+    func getRunways(with surface: String) throws -> [AWRunway] {
+        let query = AWRunway.table.filter(AWRunway.surface.like("%\(surface)%"))
+        return try db.prepare(query).map { AWRunway(row: $0) }
     }
     
     // MARK: - Navaids
     
-    func getAllNavaids() throws -> [Navaid] {
-        return try db.prepare(Navaid.table).map { Navaid(row: $0) }
+    func getAllNavaids() throws -> [AWNavaid] {
+        return try db.prepare(AWNavaid.table).map { AWNavaid(row: $0) }
     }
     
-    func getNavaids(by countryCode: String) throws -> [Navaid] {
-        let query = Navaid.table.filter(Navaid.isoCountry == countryCode)
-        return try db.prepare(query).map { Navaid(row: $0) }
+    func getNavaids(by countryCode: String) throws -> [AWNavaid] {
+        let query = AWNavaid.table.filter(AWNavaid.isoCountry == countryCode)
+        return try db.prepare(query).map { AWNavaid(row: $0) }
     }
     
-    func getNavaids(by type: NavaidType) throws -> [Navaid] {
-        let query = Navaid.table.filter(Navaid.type == type.rawValue)
-        return try db.prepare(query).map { Navaid(row: $0) }
+    func getNavaids(by type: AWNavaidType) throws -> [AWNavaid] {
+        let query = AWNavaid.table.filter(AWNavaid.type == type.rawValue)
+        return try db.prepare(query).map { AWNavaid(row: $0) }
     }
     
-    func getNavaids(for airportIdent: String) throws -> [Navaid] {
-        let query = Navaid.table.filter(Navaid.associatedAirport == airportIdent)
-        return try db.prepare(query).map { Navaid(row: $0) }
+    func getNavaids(for airportIdent: String) throws -> [AWNavaid] {
+        let query = AWNavaid.table.filter(AWNavaid.associatedAirport == airportIdent)
+        return try db.prepare(query).map { AWNavaid(row: $0) }
     }
     
-    func searchNavaids(by name: String) throws -> [Navaid] {
-        let query = Navaid.table.filter(Navaid.name.like("%\(name)%"))
-        return try db.prepare(query).map { Navaid(row: $0) }
+    func searchNavaids(by name: String) throws -> [AWNavaid] {
+        let query = AWNavaid.table.filter(AWNavaid.name.like("%\(name)%"))
+        return try db.prepare(query).map { AWNavaid(row: $0) }
     }
     
     // MARK: - Airport Comments
     
-    func getComments(for airportId: Int64) throws -> [AirportComment] {
-        let query = AirportComment.table.filter(AirportComment.airportRef == airportId)
-        return try db.prepare(query).map { AirportComment(row: $0) }
+    func getComments(for airportId: Int64) throws -> [AWAirportComment] {
+        let query = AWAirportComment.table.filter(AWAirportComment.airportRef == airportId)
+        return try db.prepare(query).map { AWAirportComment(row: $0) }
     }
     
-    func getComments(for airportIdent: String) throws -> [AirportComment] {
-        let query = AirportComment.table.filter(AirportComment.airportIdent == airportIdent)
-        return try db.prepare(query).map { AirportComment(row: $0) }
+    func getComments(for airportIdent: String) throws -> [AWAirportComment] {
+        let query = AWAirportComment.table.filter(AWAirportComment.airportIdent == airportIdent)
+        return try db.prepare(query).map { AWAirportComment(row: $0) }
     }
     
-    func getRecentComments(limit: Int = 50) throws -> [AirportComment] {
-        let query = AirportComment.table.order(AirportComment.date.desc).limit(limit)
-        return try db.prepare(query).map { AirportComment(row: $0) }
+    func getRecentComments(limit: Int = 50) throws -> [AWAirportComment] {
+        let query = AWAirportComment.table.order(AWAirportComment.date.desc).limit(limit)
+        return try db.prepare(query).map { AWAirportComment(row: $0) }
     }
     
     // MARK: - Complex Queries
     
-    func getAirportWithDetails(by ident: String) throws -> (airport: Airport, country: Country?, region: Region?, frequencies: [AirportFrequency], runways: [Runway], navaids: [Navaid], comments: [AirportComment])? {
+    func getAirportWithDetails(by ident: String) throws -> (airport: AWAirport, country: AWCountry?, region: AWRegion?, frequencies: [AWAirportFrequency], runways: [AWRunway], navaids: [AWNavaid], comments: [AWAirportComment])? {
         guard let airport = try getAirport(ident: ident) else { return nil }
         
         let country = airport.isoCountry.flatMap { try? getCountry(by: $0) }
@@ -262,42 +271,42 @@ class AWAirportsRepository {
     }
     
     func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int, comments: Int) {
-        let countries = try db.scalar(Country.table.count)
-        let regions = try db.scalar(Region.table.count)
-        let airports = try db.scalar(Airport.table.count)
-        let frequencies = try db.scalar(AirportFrequency.table.count)
-        let runways = try db.scalar(Runway.table.count)
-        let navaids = try db.scalar(Navaid.table.count)
-        let comments = try db.scalar(AirportComment.table.count)
+        let countries = try db.scalar(AWCountry.table.count)
+        let regions = try db.scalar(AWRegion.table.count)
+        let airports = try db.scalar(AWAirport.table.count)
+        let frequencies = try db.scalar(AWAirportFrequency.table.count)
+        let runways = try db.scalar(AWRunway.table.count)
+        let navaids = try db.scalar(AWNavaid.table.count)
+        let comments = try db.scalar(AWAirportComment.table.count)
         
         return (countries: countries, regions: regions, airports: airports, frequencies: frequencies, runways: runways, navaids: navaids, comments: comments)
     }
     
-    func getTopCountriesByAirportCount(limit: Int = 10) throws -> [(country: Country, count: Int)] {
-        let query = Airport.table
-            .join(Country.table, on: Airport.isoCountry == Country.code)
-            .group(Country.code)
-            .select(Country.table[*], Airport.id.count)
-            .order(Airport.id.count.desc)
+    func getTopCountriesByAirportCount(limit: Int = 10) throws -> [(country: AWCountry, count: Int)] {
+        let query = AWAirport.table
+            .join(AWCountry.table, on: AWAirport.isoCountry == AWCountry.code)
+            .group(AWCountry.code)
+            .select(AWCountry.table[*], AWAirport.id.count)
+            .order(AWAirport.id.count.desc)
             .limit(limit)
         
         return try db.prepare(query).map { row in
-            let country = Country(row: row)
-            let count = row[Airport.id.count]
+            let country = AWCountry(row: row)
+            let count = row[AWAirport.id.count]
             return (country: country, count: count)
         }
     }
     
-    func getAirportTypesDistribution() throws -> [(type: AirportType?, count: Int)] {
-        let query = Airport.table
-            .group(Airport.type)
-            .select(Airport.type, Airport.id.count)
-            .order(Airport.id.count.desc)
+    func getAirportTypesDistribution() throws -> [(type: AWAirportType?, count: Int)] {
+        let query = AWAirport.table
+            .group(AWAirport.type)
+            .select(AWAirport.type, AWAirport.id.count)
+            .order(AWAirport.id.count.desc)
         
         return try db.prepare(query).map { row in
-            let typeString = row[Airport.type]
-            let type = typeString.flatMap(AirportType.init)
-            let count = row[Airport.id.count]
+            let typeString = row[AWAirport.type]
+            let type = typeString.flatMap(AWAirportType.init)
+            let count = row[AWAirport.id.count]
             return (type: type, count: count)
         }
     }

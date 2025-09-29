@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-struct Country {
+struct AWCountry {
     let id: Int64
     let code: String
     let name: String
@@ -20,16 +20,23 @@ struct Country {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[Country.id]
-        self.code = row[Country.code]
-        self.name = row[Country.name]
-        self.continent = row[Country.continent]
-        self.wikipediaLink = row[Country.wikipediaLink]
-        self.keywords = row[Country.keywords]
+        self.id = row[AWCountry.id]
+        self.code = row[AWCountry.code]
+        self.name = row[AWCountry.name]
+        self.continent = row[AWCountry.continent]
+        self.wikipediaLink = row[AWCountry.wikipediaLink]
+        self.keywords = row[AWCountry.keywords]
     }
     
     // Convenience initializer for creating new countries
-    init(id: Int64, code: String, name: String, continent: String? = nil, wikipediaLink: String? = nil, keywords: String? = nil) {
+    init(
+        id: Int64,
+        code: String,
+        name: String,
+        continent: String? = nil,
+        wikipediaLink: String? = nil,
+        keywords: String? = nil
+    ) {
         self.id = id
         self.code = code
         self.name = name
@@ -40,21 +47,21 @@ struct Country {
 }
 
 // MARK: - Equatable
-extension Country: Equatable {
-    static func == (lhs: Country, rhs: Country) -> Bool {
+extension AWCountry: Equatable {
+    static func == (lhs: AWCountry, rhs: AWCountry) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension Country: Hashable {
+extension AWCountry: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension Country: CustomStringConvertible {
+extension AWCountry: CustomStringConvertible {
     var description: String {
         return "Country(id: \(id), code: \(code), name: \(name))"
     }

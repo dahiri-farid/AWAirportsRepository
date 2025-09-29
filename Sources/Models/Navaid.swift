@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-enum NavaidType: String, CaseIterable {
+enum AWNavaidType: String, CaseIterable {
     case ndb = "NDB"
     case vor = "VOR"
     case dme = "DME"
@@ -17,7 +17,7 @@ enum NavaidType: String, CaseIterable {
     case other = "other"
 }
 
-enum UsageType: String, CaseIterable {
+enum AWUsageType: String, CaseIterable {
     case both = "BOTH"
     case terminal = "TERMINAL"
     case low = "LO"
@@ -25,19 +25,19 @@ enum UsageType: String, CaseIterable {
     case other = "other"
 }
 
-enum Power: String, CaseIterable {
+enum AWPower: String, CaseIterable {
     case low = "LOW"
     case medium = "MEDIUM"
     case high = "HIGH"
     case other = "other"
 }
 
-struct Navaid {
+struct AWNavaid {
     let id: Int64
     let filename: String?
     let ident: String?
     let name: String?
-    let type: NavaidType?
+    let type: AWNavaidType?
     let frequencyKhz: Int?
     let latitudeDeg: Double?
     let longitudeDeg: Double?
@@ -50,8 +50,8 @@ struct Navaid {
     let dmeElevationFt: Int?
     let slavedVariationDeg: Double?
     let magneticVariationDeg: Double?
-    let usageType: UsageType?
-    let power: Power?
+    let usageType: AWUsageType?
+    let power: AWPower?
     let associatedAirport: String?
     
     // SQLite table definition
@@ -79,30 +79,51 @@ struct Navaid {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[Navaid.id]
-        self.filename = row[Navaid.filename]
-        self.ident = row[Navaid.ident]
-        self.name = row[Navaid.name]
-        self.type = row[Navaid.type].flatMap(NavaidType.init)
-        self.frequencyKhz = row[Navaid.frequencyKhz]
-        self.latitudeDeg = row[Navaid.latitudeDeg]
-        self.longitudeDeg = row[Navaid.longitudeDeg]
-        self.elevationFt = row[Navaid.elevationFt]
-        self.isoCountry = row[Navaid.isoCountry]
-        self.dmeFrequencyKhz = row[Navaid.dmeFrequencyKhz]
-        self.dmeChannel = row[Navaid.dmeChannel]
-        self.dmeLatitudeDeg = row[Navaid.dmeLatitudeDeg]
-        self.dmeLongitudeDeg = row[Navaid.dmeLongitudeDeg]
-        self.dmeElevationFt = row[Navaid.dmeElevationFt]
-        self.slavedVariationDeg = row[Navaid.slavedVariationDeg]
-        self.magneticVariationDeg = row[Navaid.magneticVariationDeg]
-        self.usageType = row[Navaid.usageType].flatMap(UsageType.init)
-        self.power = row[Navaid.power].flatMap(Power.init)
-        self.associatedAirport = row[Navaid.associatedAirport]
+        self.id = row[AWNavaid.id]
+        self.filename = row[AWNavaid.filename]
+        self.ident = row[AWNavaid.ident]
+        self.name = row[AWNavaid.name]
+        self.type = row[AWNavaid.type].flatMap(AWNavaidType.init)
+        self.frequencyKhz = row[AWNavaid.frequencyKhz]
+        self.latitudeDeg = row[AWNavaid.latitudeDeg]
+        self.longitudeDeg = row[AWNavaid.longitudeDeg]
+        self.elevationFt = row[AWNavaid.elevationFt]
+        self.isoCountry = row[AWNavaid.isoCountry]
+        self.dmeFrequencyKhz = row[AWNavaid.dmeFrequencyKhz]
+        self.dmeChannel = row[AWNavaid.dmeChannel]
+        self.dmeLatitudeDeg = row[AWNavaid.dmeLatitudeDeg]
+        self.dmeLongitudeDeg = row[AWNavaid.dmeLongitudeDeg]
+        self.dmeElevationFt = row[AWNavaid.dmeElevationFt]
+        self.slavedVariationDeg = row[AWNavaid.slavedVariationDeg]
+        self.magneticVariationDeg = row[AWNavaid.magneticVariationDeg]
+        self.usageType = row[AWNavaid.usageType].flatMap(AWUsageType.init)
+        self.power = row[AWNavaid.power].flatMap(AWPower.init)
+        self.associatedAirport = row[AWNavaid.associatedAirport]
     }
     
     // Convenience initializer
-    init(id: Int64, filename: String? = nil, ident: String? = nil, name: String? = nil, type: NavaidType? = nil, frequencyKhz: Int? = nil, latitudeDeg: Double? = nil, longitudeDeg: Double? = nil, elevationFt: Int? = nil, isoCountry: String? = nil, dmeFrequencyKhz: Int? = nil, dmeChannel: String? = nil, dmeLatitudeDeg: Double? = nil, dmeLongitudeDeg: Double? = nil, dmeElevationFt: Int? = nil, slavedVariationDeg: Double? = nil, magneticVariationDeg: Double? = nil, usageType: UsageType? = nil, power: Power? = nil, associatedAirport: String? = nil) {
+    init(
+        id: Int64,
+        filename: String? = nil,
+        ident: String? = nil,
+        name: String? = nil,
+        type: AWNavaidType? = nil,
+        frequencyKhz: Int? = nil,
+        latitudeDeg: Double? = nil,
+        longitudeDeg: Double? = nil,
+        elevationFt: Int? = nil,
+        isoCountry: String? = nil,
+        dmeFrequencyKhz: Int? = nil,
+        dmeChannel: String? = nil,
+        dmeLatitudeDeg: Double? = nil,
+        dmeLongitudeDeg: Double? = nil,
+        dmeElevationFt: Int? = nil,
+        slavedVariationDeg: Double? = nil,
+        magneticVariationDeg: Double? = nil,
+        usageType: AWUsageType? = nil,
+        power: AWPower? = nil,
+        associatedAirport: String? = nil
+    ) {
         self.id = id
         self.filename = filename
         self.ident = ident
@@ -142,21 +163,21 @@ struct Navaid {
 }
 
 // MARK: - Equatable
-extension Navaid: Equatable {
-    static func == (lhs: Navaid, rhs: Navaid) -> Bool {
+extension AWNavaid: Equatable {
+    static func == (lhs: AWNavaid, rhs: AWNavaid) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension Navaid: Hashable {
+extension AWNavaid: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension Navaid: CustomStringConvertible {
+extension AWNavaid: CustomStringConvertible {
     var description: String {
         return "Navaid(id: \(id), ident: \(ident ?? "nil"), type: \(type?.rawValue ?? "nil"))"
     }

@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-struct Region {
+struct AWRegion {
     let id: Int64
     let code: String
     let localCode: String?
@@ -24,14 +24,14 @@ struct Region {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[Region.id]
-        self.code = row[Region.code]
-        self.localCode = row[Region.localCode]
-        self.name = row[Region.name]
-        self.continent = row[Region.continent]
-        self.isoCountry = row[Region.isoCountry]
-        self.wikipediaLink = row[Region.wikipediaLink]
-        self.keywords = row[Region.keywords]
+        self.id = row[AWRegion.id]
+        self.code = row[AWRegion.code]
+        self.localCode = row[AWRegion.localCode]
+        self.name = row[AWRegion.name]
+        self.continent = row[AWRegion.continent]
+        self.isoCountry = row[AWRegion.isoCountry]
+        self.wikipediaLink = row[AWRegion.wikipediaLink]
+        self.keywords = row[AWRegion.keywords]
     }
     
     // Convenience initializer
@@ -48,21 +48,21 @@ struct Region {
 }
 
 // MARK: - Equatable
-extension Region: Equatable {
-    static func == (lhs: Region, rhs: Region) -> Bool {
+extension AWRegion: Equatable {
+    static func == (lhs: AWRegion, rhs: AWRegion) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension Region: Hashable {
+extension AWRegion: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
-extension Region: CustomStringConvertible {
+extension AWRegion: CustomStringConvertible {
     var description: String {
         return "Region(id: \(id), code: \(code), name: \(name))"
     }

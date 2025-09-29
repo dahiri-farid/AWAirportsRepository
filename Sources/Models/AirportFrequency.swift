@@ -1,7 +1,7 @@
 import Foundation
 import SQLite
 
-struct AirportFrequency {
+struct AWAirportFrequency {
     let id: Int64
     let airportRef: Int64
     let airportIdent: String?
@@ -20,16 +20,23 @@ struct AirportFrequency {
     
     // Initializer from database row
     init(row: Row) {
-        self.id = row[AirportFrequency.id]
-        self.airportRef = row[AirportFrequency.airportRef]
-        self.airportIdent = row[AirportFrequency.airportIdent]
-        self.type = row[AirportFrequency.type]
-        self.details = row[AirportFrequency.details]
-        self.frequencyMhz = row[AirportFrequency.frequencyMhz]
+        self.id = row[AWAirportFrequency.id]
+        self.airportRef = row[AWAirportFrequency.airportRef]
+        self.airportIdent = row[AWAirportFrequency.airportIdent]
+        self.type = row[AWAirportFrequency.type]
+        self.details = row[AWAirportFrequency.details]
+        self.frequencyMhz = row[AWAirportFrequency.frequencyMhz]
     }
     
     // Convenience initializer
-    init(id: Int64, airportRef: Int64, airportIdent: String? = nil, type: String? = nil, details: String? = nil, frequencyMhz: Double? = nil) {
+    init(
+        id: Int64,
+        airportRef: Int64,
+        airportIdent: String? = nil,
+        type: String? = nil,
+        details: String? = nil,
+        frequencyMhz: Double? = nil
+    ) {
         self.id = id
         self.airportRef = airportRef
         self.airportIdent = airportIdent
@@ -40,21 +47,21 @@ struct AirportFrequency {
 }
 
 // MARK: - Equatable
-extension AirportFrequency: Equatable {
-    static func == (lhs: AirportFrequency, rhs: AirportFrequency) -> Bool {
+extension AWAirportFrequency: Equatable {
+    static func == (lhs: AWAirportFrequency, rhs: AWAirportFrequency) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
-extension AirportFrequency: Hashable {
+extension AWAirportFrequency: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomDebugStringConvertible
-extension AirportFrequency: CustomStringConvertible {
+extension AWAirportFrequency: CustomStringConvertible {
     var description: String {
         let freq = frequencyMhz.map { String($0) } ?? "nil"
         return "AirportFrequency(id: \(id), type: \(type ?? "nil"), frequency: \(freq) MHz)"
