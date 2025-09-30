@@ -19,14 +19,14 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.4")
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         .target(
             name: "AWAirportsRepository",
             dependencies: [
-                .product(name: "SQLite", package: "SQLite.swift")
+                .product(name: "GRDB", package: "GRDB.swift")
             ],
 //            path: ".",
 //            sources: [

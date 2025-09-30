@@ -1,37 +1,28 @@
 import Foundation
-import SQLite
+import GRDB
 
-struct AWAirportComment {
-    let id: Int64
-    let threadRef: Int64?
-    let airportRef: Int64?
-    let airportIdent: String?
-    let date: String?
-    let memberNickname: String?
-    let subject: String?
-    let body: String?
+public struct AWAirportComment: Codable, FetchableRecord, PersistableRecord {
+    public let id: Int64
+    public let threadRef: Int64?
+    public let airportRef: Int64?
+    public let airportIdent: String?
+    public let date: String?
+    public let memberNickname: String?
+    public let subject: String?
+    public let body: String?
     
-    // SQLite table definition
-    static let table = Table("airport_comments")
-    static let id = Expression<Int64>("id")
-    static let threadRef = Expression<Int64?>("thread_ref")
-    static let airportRef = Expression<Int64?>("airport_ref")
-    static let airportIdent = Expression<String?>("airport_ident")
-    static let date = Expression<String?>("date")
-    static let memberNickname = Expression<String?>("member_nickname")
-    static let subject = Expression<String?>("subject")
-    static let body = Expression<String?>("body")
+    // GRDB table name
+    public static let databaseTableName = "airport_comments"
     
-    // Initializer from database row
-    init(row: Row) {
-        self.id = row[AWAirportComment.id]
-        self.threadRef = row[AWAirportComment.threadRef]
-        self.airportRef = row[AWAirportComment.airportRef]
-        self.airportIdent = row[AWAirportComment.airportIdent]
-        self.date = row[AWAirportComment.date]
-        self.memberNickname = row[AWAirportComment.memberNickname]
-        self.subject = row[AWAirportComment.subject]
-        self.body = row[AWAirportComment.body]
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case threadRef = "thread_ref"
+        case airportRef = "airport_ref"
+        case airportIdent = "airport_ident"
+        case date
+        case memberNickname = "member_nickname"
+        case subject
+        case body
     }
     
     // Convenience initializer
@@ -78,21 +69,21 @@ struct AWAirportComment {
 
 // MARK: - Equatable
 extension AWAirportComment: Equatable {
-    static func == (lhs: AWAirportComment, rhs: AWAirportComment) -> Bool {
+    public static func == (lhs: AWAirportComment, rhs: AWAirportComment) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 // MARK: - Hashable
 extension AWAirportComment: Hashable {
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
 
 // MARK: - CustomStringConvertible
 extension AWAirportComment: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         return "AirportComment(id: \(id), subject: \(displaySubject), author: \(memberNickname ?? "anonymous"))"
     }
 }
