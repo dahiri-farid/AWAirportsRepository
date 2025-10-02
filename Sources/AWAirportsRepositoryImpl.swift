@@ -354,4 +354,125 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             }
         }
     }
+
+    // MARK: - Airports with Runways
+    func getAirportWithRunways(id: Int64) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        return try db.read { db in
+            guard let airport = try AWAirport.filter(Column("id") == id).fetchOne(db) else { return nil }
+            let runways = try AWRunway.filter(Column("airport_ref") == id).fetchAll(db)
+            return (airport: airport, runways: runways)
+        }
+    }
+
+    func getAirportsWithRunways(countryCode: String) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+        return try db.read { db in
+            let airports = try AWAirport.filter(Column("iso_country") == countryCode).fetchAll(db)
+            if airports.isEmpty { return [] }
+            let airportIds = airports.map { $0.id }
+            let runways = try AWRunway.filter(airportIds.contains(Column("airport_ref"))).fetchAll(db)
+            let runwaysByAirport = Dictionary(grouping: runways, by: { $0.airportRef })
+            return airports.map { ($0, runwaysByAirport[$0.id] ?? []) }
+        }
+    }
+    
+    func getAirportsWithRunwaysNear(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+        let airports = try getAirportsNear(latitude: latitude, longitude: longitude, radiusKm: radiusKm)
+        if airports.isEmpty { return [] }
+        
+        return try db.read { db in
+            let airportIds = airports.map { $0.id }
+            let runways = try AWRunway.filter(airportIds.contains(Column("airport_ref"))).fetchAll(db)
+            let runwaysByAirport = Dictionary(grouping: runways, by: { $0.airportRef })
+            return airports.map { ($0, runwaysByAirport[$0.id] ?? []) }
+        }
+    }
+    
+    func getNearestAirportWithRunways(latitude: Double, longitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        // Use a default radius of 200km for broad search
+        return try getNearestAirportWithRunways(latitude: latitude, longitude: longitude, radiusKm: 200)
+    }
+    
+    func getNearestAirportWithRunways(latitude: Double, longitude: Double, radiusKm: Double) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        guard let airport = try getNearestAirport(latitude: latitude, longitude: longitude, radiusKm: radiusKm) else {
+            return nil
+        }
+        
+        return try db.read { db in
+            let runways = try AWRunway.filter(Column("airport_ref") == airport.id).fetchAll(db)
+            return (airport: airport, runways: runways)
+        }
+    }
+    
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double
+    ) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        // Local Haversine distance calculator (in kilometers)
+        func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
+            let R = 6371.0 // Earth's mean radius in km
+            let φ1 = lat1 * .pi / 180
+            let φ2 = lat2 * .pi / 180
+            let Δφ = (lat2 - lat1) * .pi / 180
+            let Δλ = (lon2 - lon1) * .pi / 180
+            let a = sin(Δφ / 2) * sin(Δφ / 2) + cos(φ1) * cos(φ2) * sin(Δλ / 2) * sin(Δλ / 2)
+            let c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            return R * c
+        }
+        
+        // Get candidate airports in the bounding box
+        let candidates = try getAirportsForLocation(
+            latitude: latitude,
+            longitude: longitude,
+            rangeLatitude: rangeLatitude,
+            rangeLongitude: rangeLongitude
+        )
+        guard !candidates.isEmpty else { return nil }
+        
+        // Find the nearest airport by computing precise distances
+        let nearest = candidates.compactMap { airport -> (AWAirport, Double)? in
+            guard let lat = airport.latitudeDeg, let lon = airport.longitudeDeg else { return nil }
+            let distance = haversineDistanceKm(latitude, longitude, lat, lon)
+            return (airport, distance)
+        }.min(by: { $0.1 < $1.1 })?.0
+        
+        guard let airport = nearest else { return nil }
+        
+        return try db.read { db in
+            let runways = try AWRunway.filter(Column("airport_ref") == airport.id).fetchAll(db)
+            return (airport: airport, runways: runways)
+        }
+    }
+    
+    func getAirportsWithRunwaysForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+        let airports = try getAirportsForLocation(
+            latitude: latitude,
+            longitude: longitude,
+            rangeLatitude: rangeLatitude,
+            rangeLongitude: rangeLongitude
+        )
+        if airports.isEmpty { return [] }
+        
+        return try db.read { db in
+            let airportIds = airports.map { $0.id }
+            let runways = try AWRunway.filter(airportIds.contains(Column("airport_ref"))).fetchAll(db)
+            let runwaysByAirport = Dictionary(grouping: runways, by: { $0.airportRef })
+            return airports.map { ($0, runwaysByAirport[$0.id] ?? []) }
+        }
+    }
+    
+    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+        return try getAirportsWithRunwaysForLocation(
+            latitude: latitude,
+            longitude: longitude,
+            rangeLatitude: rangeInDegrees,
+            rangeLongitude: rangeInDegrees
+        )
+    }
 }

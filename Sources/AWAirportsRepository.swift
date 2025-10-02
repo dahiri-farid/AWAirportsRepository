@@ -25,6 +25,12 @@ public protocol AWAirportsRepository {
     func getNearestAirport(latitude: Double, longitude: Double, radiusKm: Double) throws -> AWAirport?
     func getAirportsForLocation(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> [AWAirport]
     func getAirportsForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [AWAirport]
+    func getAirportsWithRunwaysNear(latitude: Double, longitude: Double, radiusKm: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    func getNearestAirportWithRunways(latitude: Double, longitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
+    func getNearestAirportWithRunways(latitude: Double, longitude: Double, radiusKm: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
+    func getNearestAirportWithRunways(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
+    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
 
     // Frequencies
     func getFrequencies(for airportId: Int64) throws -> [AWAirportFrequency]
@@ -54,5 +60,9 @@ public protocol AWAirportsRepository {
     func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int, comments: Int)
     func getTopCountriesByAirportCount(limit: Int) throws -> [(country: AWCountry, count: Int)]
     func getAirportTypesDistribution() throws -> [(type: AWAirportType?, count: Int)]
+
+    // Airports with related data
+    func getAirportWithRunways(id: Int64) throws -> (airport: AWAirport, runways: [AWRunway])?
+    func getAirportsWithRunways(countryCode: String) throws -> [(airport: AWAirport, runways: [AWRunway])]
 }
    
