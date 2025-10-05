@@ -28,17 +28,6 @@ let package = Package(
             dependencies: [
                 .product(name: "GRDB", package: "GRDB.swift")
             ],
-//            path: ".",
-//            sources: [
-//                "Models/Country.swift",
-//                "Models/Region.swift",
-//                "Models/Airport.swift",
-//                "Models/AirportFrequency.swift",
-//                "Models/Runway.swift",
-//                "Models/Navaid.swift",
-//                "Models/AirportComment.swift",
-//                "AWAirportsRepository.swift"
-//            ]
         ),
     ]
 )

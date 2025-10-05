@@ -21,16 +21,78 @@ public protocol AWAirportsRepository {
     func getAirports(regionCode: String) throws -> [AWAirport]
     func getAirports(type: AWAirportType) throws -> [AWAirport]
     func searchAirports(name: String) throws -> [AWAirport]
-    func getAirportsNear(latitude: Double, longitude: Double, radiusKm: Double) throws -> [AWAirport]
-    func getNearestAirport(latitude: Double, longitude: Double, radiusKm: Double) throws -> AWAirport?
-    func getAirportsForLocation(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> [AWAirport]
-    func getAirportsForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [AWAirport]
-    func getAirportsWithRunwaysNear(latitude: Double, longitude: Double, radiusKm: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
-    func getNearestAirportWithRunways(latitude: Double, longitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
-    func getNearestAirportWithRunways(latitude: Double, longitude: Double, radiusKm: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
-    func getNearestAirportWithRunways(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])?
-    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeLatitude: Double, rangeLongitude: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
-    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    
+    func getAirportsNear(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        types: [String]
+    ) throws -> [AWAirport]
+    
+    func getNearestAirport(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        types: [String]
+    ) throws -> AWAirport?
+    
+    func getAirportsForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double,
+        types: [String]
+    ) throws -> [AWAirport]
+    
+    func getAirportsForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeInDegrees: Double,
+        types: [String]
+    ) throws -> [AWAirport]
+    
+    func getAirportsWithRunwaysNear(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        types: [String]
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        types: [String]
+    ) throws -> (airport: AWAirport, runways: [AWRunway])?
+    
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        types: [String]
+    ) throws -> (airport: AWAirport, runways: [AWRunway])?
+    
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double,
+        types: [String]
+    ) throws -> (airport: AWAirport, runways: [AWRunway])?
+    
+    func getAirportsWithRunwaysForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeLatitude: Double,
+        rangeLongitude: Double,
+        types: [String]
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    
+    func getAirportsWithRunwaysForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeInDegrees: Double,
+        types: [String]
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])]
 
     // Frequencies
     func getFrequencies(for airportId: Int64) throws -> [AWAirportFrequency]
@@ -50,19 +112,17 @@ public protocol AWAirportsRepository {
     func getNavaids(for airportIdent: String) throws -> [AWNavaid]
     func searchNavaids(by name: String) throws -> [AWNavaid]
 
-    // Comments
-    func getComments(for airportId: Int64) throws -> [AWAirportComment]
-    func getComments(for airportIdent: String) throws -> [AWAirportComment]
-    func getRecentComments(limit: Int) throws -> [AWAirportComment]
-
     // Complex / aggregates
-    func getAirportWithDetails(by ident: String) throws -> (airport: AWAirport, country: AWCountry?, region: AWRegion?, frequencies: [AWAirportFrequency], runways: [AWRunway], navaids: [AWNavaid], comments: [AWAirportComment])?
-    func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int, comments: Int)
+    func getAirportWithDetails(by ident: String) throws -> (airport: AWAirport, country: AWCountry?, region: AWRegion?, frequencies: [AWAirportFrequency], runways: [AWRunway], navaids: [AWNavaid])?
+    
+    func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int)
+    
     func getTopCountriesByAirportCount(limit: Int) throws -> [(country: AWCountry, count: Int)]
     func getAirportTypesDistribution() throws -> [(type: AWAirportType?, count: Int)]
 
     // Airports with related data
     func getAirportWithRunways(id: Int64) throws -> (airport: AWAirport, runways: [AWRunway])?
+    
     func getAirportsWithRunways(countryCode: String) throws -> [(airport: AWAirport, runways: [AWRunway])]
 }
    

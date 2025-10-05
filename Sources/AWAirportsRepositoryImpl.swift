@@ -113,7 +113,12 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getAirportsNear(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> [AWAirport] {
+    func getAirportsNear(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double = 50,
+        types: [String]
+    ) throws -> [AWAirport] {
         let latDelta = radiusKm / 111.0
         let lonDelta = radiusKm / (111.0 * abs(latitude) / 90.0)
         
@@ -122,7 +127,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: latDelta,
-            rangeLongitude: lonDelta
+            rangeLongitude: lonDelta,
+            types: types
         )
     }
     
@@ -135,7 +141,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
     func getNearestAirport(
         latitude: Double,
         longitude: Double,
-        radiusKm: Double = 50
+        radiusKm: Double = 50,
+        types: [String]
     ) throws -> AWAirport? {
         // Local Haversine distance calculator (in kilometers)
         func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
@@ -150,7 +157,12 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
         
         // First, get candidate airports in a bounding box around the coordinate.
-        let candidates = try getAirportsNear(latitude: latitude, longitude: longitude, radiusKm: radiusKm)
+        let candidates = try getAirportsNear(
+            latitude: latitude,
+            longitude: longitude,
+            radiusKm: radiusKm,
+            types: types
+        )
         guard !candidates.isEmpty else { return nil }
         
         // Compute precise distances and return the closest one.
@@ -167,7 +179,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         rangeLatitude: Double,
-        rangeLongitude: Double
+        rangeLongitude: Double,
+        types: [String]
     ) throws -> [AWAirport] {
         // Compute bounding box
         let minLon = longitude - rangeLongitude
@@ -184,12 +197,18 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getAirportsForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [AWAirport] {
+    func getAirportsForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeInDegrees: Double,
+        types: [String]
+    ) throws -> [AWAirport] {
         return try getAirportsForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeInDegrees,
-            rangeLongitude: rangeInDegrees
+            rangeLongitude: rangeInDegrees,
+            types: types
         )
     }
     
@@ -271,29 +290,9 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    // MARK: - Airport Comments
-    
-    func getComments(for airportId: Int64) throws -> [AWAirportComment] {
-        return try db.read { db in
-            try AWAirportComment.filter(Column("airport_ref") == airportId).fetchAll(db)
-        }
-    }
-    
-    func getComments(for airportIdent: String) throws -> [AWAirportComment] {
-        return try db.read { db in
-            try AWAirportComment.filter(Column("airport_ident") == airportIdent).fetchAll(db)
-        }
-    }
-    
-    func getRecentComments(limit: Int = 50) throws -> [AWAirportComment] {
-        return try db.read { db in
-            try AWAirportComment.order(Column("date").desc).limit(limit).fetchAll(db)
-        }
-    }
-    
     // MARK: - Complex Queries
     
-    func getAirportWithDetails(by ident: String) throws -> (airport: AWAirport, country: AWCountry?, region: AWRegion?, frequencies: [AWAirportFrequency], runways: [AWRunway], navaids: [AWNavaid], comments: [AWAirportComment])? {
+    func getAirportWithDetails(by ident: String) throws -> (airport: AWAirport, country: AWCountry?, region: AWRegion?, frequencies: [AWAirportFrequency], runways: [AWRunway], navaids: [AWNavaid])? {
         guard let airport = try getAirport(ident: ident) else { return nil }
         
         let country = airport.isoCountry.flatMap { try? getCountry(by: $0) }
@@ -301,12 +300,11 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         let frequencies = try getFrequencies(for: airport.id)
         let runways = try getRunways(for: airport.id)
         let navaids = try getNavaids(for: airport.ident)
-        let comments = try getComments(for: airport.id)
         
-        return (airport: airport, country: country, region: region, frequencies: frequencies, runways: runways, navaids: navaids, comments: comments)
+        return (airport: airport, country: country, region: region, frequencies: frequencies, runways: runways, navaids: navaids)
     }
     
-    func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int, comments: Int) {
+    func getStatistics() throws -> (countries: Int, regions: Int, airports: Int, frequencies: Int, runways: Int, navaids: Int) {
         return try db.read { db in
             let countries = try AWCountry.fetchCount(db)
             let regions = try AWRegion.fetchCount(db)
@@ -314,9 +312,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             let frequencies = try AWAirportFrequency.fetchCount(db)
             let runways = try AWRunway.fetchCount(db)
             let navaids = try AWNavaid.fetchCount(db)
-            let comments = try AWAirportComment.fetchCount(db)
             
-            return (countries: countries, regions: regions, airports: airports, frequencies: frequencies, runways: runways, navaids: navaids, comments: comments)
+            return (countries: countries, regions: regions, airports: airports, frequencies: frequencies, runways: runways, navaids: navaids)
         }
     }
     
@@ -375,8 +372,18 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getAirportsWithRunwaysNear(latitude: Double, longitude: Double, radiusKm: Double = 50) throws -> [(airport: AWAirport, runways: [AWRunway])] {
-        let airports = try getAirportsNear(latitude: latitude, longitude: longitude, radiusKm: radiusKm)
+    func getAirportsWithRunwaysNear(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double = 50,
+        types: [String]
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+        let airports = try getAirportsNear(
+            latitude: latitude,
+            longitude: longitude,
+            radiusKm: radiusKm,
+            types: types
+        )
         if airports.isEmpty { return [] }
         
         return try db.read { db in
@@ -387,13 +394,32 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getNearestAirportWithRunways(latitude: Double, longitude: Double) throws -> (airport: AWAirport, runways: [AWRunway])? {
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        types: [String]
+    ) throws -> (airport: AWAirport, runways: [AWRunway])? {
         // Use a default radius of 200km for broad search
-        return try getNearestAirportWithRunways(latitude: latitude, longitude: longitude, radiusKm: 200)
+        return try getNearestAirportWithRunways(
+            latitude: latitude,
+            longitude: longitude,
+            radiusKm: 200,
+            types: types
+        )
     }
     
-    func getNearestAirportWithRunways(latitude: Double, longitude: Double, radiusKm: Double) throws -> (airport: AWAirport, runways: [AWRunway])? {
-        guard let airport = try getNearestAirport(latitude: latitude, longitude: longitude, radiusKm: radiusKm) else {
+    func getNearestAirportWithRunways(
+        latitude: Double,
+        longitude: Double,
+        radiusKm: Double,
+        types: [String]
+    ) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        guard let airport = try getNearestAirport(
+            latitude: latitude,
+            longitude: longitude,
+            radiusKm: radiusKm,
+            types: types
+        ) else {
             return nil
         }
         
@@ -407,7 +433,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         rangeLatitude: Double,
-        rangeLongitude: Double
+        rangeLongitude: Double,
+        types: [String]
     ) throws -> (airport: AWAirport, runways: [AWRunway])? {
         // Local Haversine distance calculator (in kilometers)
         func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
@@ -426,7 +453,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeLatitude,
-            rangeLongitude: rangeLongitude
+            rangeLongitude: rangeLongitude,
+            types: types
         )
         guard !candidates.isEmpty else { return nil }
         
@@ -449,13 +477,15 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         rangeLatitude: Double,
-        rangeLongitude: Double
+        rangeLongitude: Double,
+        types: [String]
     ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         let airports = try getAirportsForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeLatitude,
-            rangeLongitude: rangeLongitude
+            rangeLongitude: rangeLongitude,
+            types: types
         )
         if airports.isEmpty { return [] }
         
@@ -467,12 +497,18 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getAirportsWithRunwaysForLocation(latitude: Double, longitude: Double, rangeInDegrees: Double) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+    func getAirportsWithRunwaysForLocation(
+        latitude: Double,
+        longitude: Double,
+        rangeInDegrees: Double,
+        types: [String]
+    ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         return try getAirportsWithRunwaysForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeInDegrees,
-            rangeLongitude: rangeInDegrees
+            rangeLongitude: rangeInDegrees,
+            types: types
         )
     }
 }
