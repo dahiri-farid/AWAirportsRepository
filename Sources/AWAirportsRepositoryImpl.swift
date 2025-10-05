@@ -193,6 +193,7 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
                 .filter(Column("latitude_deg") != nil && Column("longitude_deg") != nil)
                 .filter(Column("longitude_deg") >= minLon && Column("longitude_deg") <= maxLon)
                 .filter(Column("latitude_deg") >= minLat && Column("latitude_deg") <= maxLat)
+                .filter(types.contains(Column("type")))
                 .fetchAll(db)
         }
     }
