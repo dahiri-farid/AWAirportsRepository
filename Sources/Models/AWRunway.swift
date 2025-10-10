@@ -95,20 +95,45 @@ public struct AWRunway: Codable, FetchableRecord, PersistableRecord {
     }
     
     // Computed properties for convenience
-    var lengthMeters: Double? {
+    public var lengthMeters: Double? {
         guard let lengthFt = lengthFt else { return nil }
         return Double(lengthFt) * 0.3048
     }
     
-    var widthMeters: Double? {
+    public var widthMeters: Double? {
         guard let widthFt = widthFt else { return nil }
         return Double(widthFt) * 0.3048
     }
     
-    var runwayDesignation: String {
+    public var runwayDesignation: String {
         let le = leIdent ?? "??"
         let he = heIdent ?? "??"
         return "\(le)/\(he)"
+    }
+    
+    public var orientationDegrees: Double? {
+        // Prefer precise true heading if available
+        if let le = leHeadingDegT {
+            return le
+        } else if let he = heHeadingDegT {
+            return he
+        }
+
+        // Fallback to identifiers like "07"/"25"
+        func heading(from ident: String?) -> Double? {
+            guard let ident = ident else { return nil }
+            let trimmed = ident.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard let num = Int(trimmed.prefix { $0.isNumber }) else { return nil }
+            return Double((num * 10) % 360)
+        }
+
+        if let le = heading(from: leIdent) {
+            return le
+        } else if let he = heading(from: heIdent) {
+            return he
+        }
+
+        return nil
     }
 }
 
