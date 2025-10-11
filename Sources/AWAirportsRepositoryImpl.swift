@@ -59,10 +59,20 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
     
     // MARK: - Airports
     
-    func getAllAirports() throws -> [AWAirport] {
-        return try db.read { db in
+    /// Helper method to filter airports by valid ICAO codes
+    private func filterByValidICAO(_ airports: [AWAirport], onlyValidICAO: Bool) -> [AWAirport] {
+        guard onlyValidICAO else { return airports }
+        return airports.filter { airport in
+            guard let icao = airport.icaoCode else { return false }
+            return !icao.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+    }
+    
+    func getAllAirports(onlyValidICAO: Bool) throws -> [AWAirport] {
+        let airports = try db.read { db in
             try AWAirport.fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
     func getAirport(id: Int64) throws -> AWAirport? {
@@ -89,35 +99,40 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
     
-    func getAirports(countryCode: String) throws -> [AWAirport] {
-        return try db.read { db in
+    func getAirports(countryCode: String, onlyValidICAO: Bool) throws -> [AWAirport] {
+        let airports = try db.read { db in
             try AWAirport.filter(Column("iso_country") == countryCode).fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
-    func getAirports(regionCode: String) throws -> [AWAirport] {
-        return try db.read { db in
+    func getAirports(regionCode: String, onlyValidICAO: Bool) throws -> [AWAirport] {
+        let airports = try db.read { db in
             try AWAirport.filter(Column("iso_region") == regionCode).fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
-    func getAirports(type: AWAirportType) throws -> [AWAirport] {
-        return try db.read { db in
+    func getAirports(type: AWAirportType, onlyValidICAO: Bool) throws -> [AWAirport] {
+        let airports = try db.read { db in
             try AWAirport.filter(Column("type") == type.rawValue).fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
-    func searchAirports(name: String) throws -> [AWAirport] {
-        return try db.read { db in
+    func searchAirports(name: String, onlyValidICAO: Bool) throws -> [AWAirport] {
+        let airports = try db.read { db in
             try AWAirport.filter(Column("name").like("%\(name)%")).fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
     func getAirportsNear(
         latitude: Double,
         longitude: Double,
         radiusKm: Double = 50,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport] {
         let latDelta = radiusKm / 111.0
         let lonDelta = radiusKm / (111.0 * abs(latitude) / 90.0)
@@ -128,7 +143,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             longitude: longitude,
             rangeLatitude: latDelta,
             rangeLongitude: lonDelta,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
     }
     
@@ -142,7 +158,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         radiusKm: Double = 50,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> AWAirport? {
         // Local Haversine distance calculator (in kilometers)
         func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
@@ -161,7 +178,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             latitude: latitude,
             longitude: longitude,
             radiusKm: radiusKm,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
         guard !candidates.isEmpty else { return nil }
         
@@ -180,7 +198,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport] {
         // Compute bounding box
         let minLon = longitude - rangeLongitude
@@ -188,7 +207,7 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         let minLat = latitude - rangeLatitude
         let maxLat = latitude + rangeLatitude
 
-        return try db.read { db in
+        let airports = try db.read { db in
             try AWAirport
                 .filter(Column("latitude_deg") != nil && Column("longitude_deg") != nil)
                 .filter(Column("longitude_deg") >= minLon && Column("longitude_deg") <= maxLon)
@@ -196,20 +215,23 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
                 .filter(types.contains(Column("type")))
                 .fetchAll(db)
         }
+        return filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
     }
     
     func getAirportsForLocation(
         latitude: Double,
         longitude: Double,
         rangeInDegrees: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport] {
         return try getAirportsForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeInDegrees,
             rangeLongitude: rangeInDegrees,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
     }
     
@@ -362,9 +384,10 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
 
-    func getAirportsWithRunways(countryCode: String) throws -> [(airport: AWAirport, runways: [AWRunway])] {
+    func getAirportsWithRunways(countryCode: String, onlyValidICAO: Bool) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         return try db.read { db in
-            let airports = try AWAirport.filter(Column("iso_country") == countryCode).fetchAll(db)
+            var airports = try AWAirport.filter(Column("iso_country") == countryCode).fetchAll(db)
+            airports = filterByValidICAO(airports, onlyValidICAO: onlyValidICAO)
             if airports.isEmpty { return [] }
             let airportIds = airports.map { $0.id }
             let runways = try AWRunway.filter(airportIds.contains(Column("airport_ref"))).fetchAll(db)
@@ -377,13 +400,15 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         radiusKm: Double = 50,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         let airports = try getAirportsNear(
             latitude: latitude,
             longitude: longitude,
             radiusKm: radiusKm,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
         if airports.isEmpty { return [] }
         
@@ -398,14 +423,16 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
     func getNearestAirportWithRunways(
         latitude: Double,
         longitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])? {
         // Use a default radius of 200km for broad search
         return try getNearestAirportWithRunways(
             latitude: latitude,
             longitude: longitude,
             radiusKm: 200,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
     }
     
@@ -413,13 +440,15 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         radiusKm: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])? {
         guard let airport = try getNearestAirport(
             latitude: latitude,
             longitude: longitude,
             radiusKm: radiusKm,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         ) else {
             return nil
         }
@@ -435,7 +464,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])? {
         // Local Haversine distance calculator (in kilometers)
         func haversineDistanceKm(_ lat1: Double, _ lon1: Double, _ lat2: Double, _ lon2: Double) -> Double {
@@ -455,7 +485,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
             longitude: longitude,
             rangeLatitude: rangeLatitude,
             rangeLongitude: rangeLongitude,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
         guard !candidates.isEmpty else { return nil }
         
@@ -479,14 +510,16 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         let airports = try getAirportsForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeLatitude,
             rangeLongitude: rangeLongitude,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
         if airports.isEmpty { return [] }
         
@@ -502,14 +535,16 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         latitude: Double,
         longitude: Double,
         rangeInDegrees: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         return try getAirportsWithRunwaysForLocation(
             latitude: latitude,
             longitude: longitude,
             rangeLatitude: rangeInDegrees,
             rangeLongitude: rangeInDegrees,
-            types: types
+            types: types,
+            onlyValidICAO: onlyValidICAO
         )
     }
 }

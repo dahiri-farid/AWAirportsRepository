@@ -12,28 +12,30 @@ public protocol AWAirportsRepository {
     func getRegion(by code: String) throws -> AWRegion?
 
     // Airports
-    func getAllAirports() throws -> [AWAirport]
+    func getAllAirports(onlyValidICAO: Bool) throws -> [AWAirport]
     func getAirport(id: Int64) throws -> AWAirport?
     func getAirport(ident: String) throws -> AWAirport?
     func getAirport(iataCode: String) throws -> AWAirport?
     func getAirport(icaoCode: String) throws -> AWAirport?
-    func getAirports(countryCode: String) throws -> [AWAirport]
-    func getAirports(regionCode: String) throws -> [AWAirport]
-    func getAirports(type: AWAirportType) throws -> [AWAirport]
-    func searchAirports(name: String) throws -> [AWAirport]
+    func getAirports(countryCode: String, onlyValidICAO: Bool) throws -> [AWAirport]
+    func getAirports(regionCode: String, onlyValidICAO: Bool) throws -> [AWAirport]
+    func getAirports(type: AWAirportType, onlyValidICAO: Bool) throws -> [AWAirport]
+    func searchAirports(name: String, onlyValidICAO: Bool) throws -> [AWAirport]
     
     func getAirportsNear(
         latitude: Double,
         longitude: Double,
         radiusKm: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport]
     
     func getNearestAirport(
         latitude: Double,
         longitude: Double,
         radiusKm: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> AWAirport?
     
     func getAirportsForLocation(
@@ -41,34 +43,39 @@ public protocol AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport]
     
     func getAirportsForLocation(
         latitude: Double,
         longitude: Double,
         rangeInDegrees: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [AWAirport]
     
     func getAirportsWithRunwaysNear(
         latitude: Double,
         longitude: Double,
         radiusKm: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])]
     
     func getNearestAirportWithRunways(
         latitude: Double,
         longitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])?
     
     func getNearestAirportWithRunways(
         latitude: Double,
         longitude: Double,
         radiusKm: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])?
     
     func getNearestAirportWithRunways(
@@ -76,7 +83,8 @@ public protocol AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> (airport: AWAirport, runways: [AWRunway])?
     
     func getAirportsWithRunwaysForLocation(
@@ -84,14 +92,16 @@ public protocol AWAirportsRepository {
         longitude: Double,
         rangeLatitude: Double,
         rangeLongitude: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])]
     
     func getAirportsWithRunwaysForLocation(
         latitude: Double,
         longitude: Double,
         rangeInDegrees: Double,
-        types: [String]
+        types: [String],
+        onlyValidICAO: Bool
     ) throws -> [(airport: AWAirport, runways: [AWRunway])]
 
     // Frequencies
@@ -123,6 +133,6 @@ public protocol AWAirportsRepository {
     // Airports with related data
     func getAirportWithRunways(id: Int64) throws -> (airport: AWAirport, runways: [AWRunway])?
     
-    func getAirportsWithRunways(countryCode: String) throws -> [(airport: AWAirport, runways: [AWRunway])]
+    func getAirportsWithRunways(countryCode: String, onlyValidICAO: Bool) throws -> [(airport: AWAirport, runways: [AWRunway])]
 }
    
