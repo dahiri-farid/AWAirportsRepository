@@ -63,8 +63,7 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
     private func filterByValidICAO(_ airports: [AWAirport], onlyValidICAO: Bool) -> [AWAirport] {
         guard onlyValidICAO else { return airports }
         return airports.filter { airport in
-            guard let icao = airport.icaoCode else { return false }
-            return !icao.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return airport.ident.trimmingCharacters(in: .whitespacesAndNewlines).count == 4
         }
     }
     
