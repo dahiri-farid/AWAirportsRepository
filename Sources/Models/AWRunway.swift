@@ -112,14 +112,7 @@ public struct AWRunway: Codable, FetchableRecord, PersistableRecord {
     }
     
     public var orientationDegrees: Double? {
-        // Prefer precise true heading if available
-        if let le = leHeadingDegT {
-            return le
-        } else if let he = heHeadingDegT {
-            return he
-        }
-
-        // Fallback to identifiers like "07"/"25"
+        // Prefer identifiers like "07"/"25" first
         func heading(from ident: String?) -> Double? {
             guard let ident = ident else { return nil }
             let trimmed = ident.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -130,6 +123,13 @@ public struct AWRunway: Codable, FetchableRecord, PersistableRecord {
         if let le = heading(from: leIdent) {
             return le
         } else if let he = heading(from: heIdent) {
+            return he
+        }
+
+        // Fallback to precise true heading if available
+        if let le = leHeadingDegT {
+            return le
+        } else if let he = heHeadingDegT {
             return he
         }
 
