@@ -383,6 +383,12 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
         }
     }
 
+    func getAirportWithRunways(ident: String) throws -> (airport: AWAirport, runways: [AWRunway])? {
+        guard let airport = try getAirport(ident: ident) else { return nil }
+        let runways = try getRunways(for: ident)
+        return (airport: airport, runways: runways)
+    }
+
     func getAirportsWithRunways(countryCode: String, onlyValidICAO: Bool) throws -> [(airport: AWAirport, runways: [AWRunway])] {
         return try db.read { db in
             var airports = try AWAirport.filter(Column("iso_country") == countryCode).fetchAll(db)

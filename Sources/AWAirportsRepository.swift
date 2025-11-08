@@ -132,6 +132,7 @@ public protocol AWAirportsRepository {
 
     // Airports with related data
     func getAirportWithRunways(id: Int64) throws -> (airport: AWAirport, runways: [AWRunway])?
+    func getAirportWithRunways(ident: String) throws -> (airport: AWAirport, runways: [AWRunway])?
     
     func getAirportsWithRunways(countryCode: String, onlyValidICAO: Bool) throws -> [(airport: AWAirport, runways: [AWRunway])]
 }
