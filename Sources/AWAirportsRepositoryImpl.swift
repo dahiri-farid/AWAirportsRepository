@@ -263,9 +263,8 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
     }
     
     func getRunways(for airportIdent: String) throws -> [AWRunway] {
-        return try db.read { db in
-            try AWRunway.filter(Column("airport_ident") == airportIdent).fetchAll(db)
-        }
+        guard let airport = try getAirport(ident: airportIdent) else { return [] }
+        return try getRunways(for: airport.id)
     }
     
     func getRunways(longerThan lengthFt: Int) throws -> [AWRunway] {
@@ -385,7 +384,7 @@ final class AWAirportsRepositoryImpl: AWAirportsRepository {
 
     func getAirportWithRunways(ident: String) throws -> (airport: AWAirport, runways: [AWRunway])? {
         guard let airport = try getAirport(ident: ident) else { return nil }
-        let runways = try getRunways(for: ident)
+        let runways = try getRunways(for: airport.id)
         return (airport: airport, runways: runways)
     }
 
