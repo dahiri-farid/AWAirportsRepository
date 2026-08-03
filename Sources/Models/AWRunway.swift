@@ -50,7 +50,7 @@ public struct AWRunway: Codable, FetchableRecord, PersistableRecord {
     }
     
     // Convenience initializer
-    init(
+    public init(
         id: Int64,
         airportRef: Int64,
         airportIdent: String? = nil,
