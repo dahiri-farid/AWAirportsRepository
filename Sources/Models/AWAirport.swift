@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-public enum AWAirportType: String, CaseIterable, Codable {
+public enum AWAirportType: String, CaseIterable, Codable, Sendable {
     case smallAirport = "small_airport"
     case mediumAirport = "medium_airport"
     case largeAirport = "large_airport"
@@ -12,13 +12,13 @@ public enum AWAirportType: String, CaseIterable, Codable {
     case other = "other"
 }
 
-public enum AWScheduledService: String, Codable {
+public enum AWScheduledService: String, Codable, Sendable {
     case yes = "yes"
     case no = "no"
     case unknown = "unknown"
 }
 
-public struct AWAirport: Codable, FetchableRecord, PersistableRecord {
+public struct AWAirport: Codable, FetchableRecord, PersistableRecord, Sendable {
     public let id: Int64
     public let ident: String
     public let type: AWAirportType?

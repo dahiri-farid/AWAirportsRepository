@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-public struct AWRunway: Codable, FetchableRecord, PersistableRecord {
+public struct AWRunway: Codable, FetchableRecord, PersistableRecord, Sendable {
     public let id: Int64
     public let airportRef: Int64
     public let airportIdent: String?

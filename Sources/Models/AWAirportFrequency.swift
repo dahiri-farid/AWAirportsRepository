@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-public struct AWAirportFrequency: Codable, FetchableRecord, PersistableRecord {
+public struct AWAirportFrequency: Codable, FetchableRecord, PersistableRecord, Sendable {
     public let id: Int64
     public let airportRef: Int64
     public let airportIdent: String?
@@ -60,4 +60,3 @@ extension AWAirportFrequency: CustomStringConvertible {
         return "AirportFrequency(id: \(id), type: \(type ?? "nil"), frequency: \(freq) MHz)"
     }
 }
-
